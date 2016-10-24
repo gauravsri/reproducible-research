@@ -1,0 +1,62 @@
+User Usage report
+========================================================
+author: Gaurav Srivastva
+date: Oct 21, 2016
+autosize: true
+
+About the project
+========================================================
+
+This project allows viewing of usage for a product by various companies.
+
+- Filtering can be done for a range of users using the product
+- Table of product usage can be customized for various columns of interest
+- Searching capability for product table
+
+```{r, echo=FALSE}
+library(shiny)
+library(RCurl)
+library(rjson)
+library(stringr)
+library(lubridate)
+library(ggplot2)
+library(dplyr)
+library(googleVis)
+
+orgList <- NULL
+tryCatch(orgList <- readRDS(file="orgList.Rda"), warning = function(e) {
+  print("No backup data found")
+})
+
+enabledTable <- arrange(filter(orgList, 
+                               status=="GROUP_NORMAL_SUBSCRIPTION"
+), 
+desc(enabled_users))
+
+```
+
+Summary of Data
+========================================================
+
+Distribution of users enabled/disabled in the product for various companies
+```{r}
+summary(orgList$default_plan_code)
+summary(orgList$status)
+summary(orgList$enabled_users)
+summary(orgList$disabled_users)
+```
+
+License usage
+========================================================
+
+```{r, echo=FALSE}
+table(orgList$default_plan_code, orgList$enabled_users)
+```
+
+Summary
+========================================================
+```{r, echo=FALSE}
+```
+
+1. There are **`r nrow(orgList)`** companies using the product. 
+2. Out of **`r nrow(orgList)`** Orgs, **`r nrow(enabledTable)`** Orgs have a valid subscription and **`r nrow(orgList) - nrow(enabledTable)`** have been disabled. 
